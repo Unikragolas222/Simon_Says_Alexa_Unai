@@ -64,6 +64,7 @@ class SimonDice
     static void MostrarPantallaInicio()
     {
         Console.ForegroundColor = ConsoleColor.Yellow;
+        Console.Clear();
 
         string SimónDice =
             @"  
