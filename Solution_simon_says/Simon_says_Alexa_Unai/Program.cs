@@ -1,5 +1,4 @@
-﻿
-class SimonDice
+﻿class SimonDice
 {
     // Inicializar secuencia y función random
     static List<char> secuencia = new List<char>();
@@ -10,6 +9,8 @@ class SimonDice
 
     static void Main()
     {
+        LeerMaxScore();
+
         ConsoleKey KeepPlaying = ConsoleKey.Y;
 
         while (KeepPlaying != ConsoleKey.N)
@@ -27,6 +28,8 @@ class SimonDice
             {
                 if (!error)
                 {
+                    MostrarPantallaDividida();
+                    Thread.Sleep(500);
                     AgregarALaSecuencia();
                     MostrarSecuencia();
                 }
@@ -36,7 +39,10 @@ class SimonDice
                     break;
 
                 Console.Clear();
-                Console.WriteLine("¡Correcto! Sigue así...\n");
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("\n\n             ************************************");
+                Console.ForegroundColor = ConsoleColor.Blue;
+                Console.WriteLine("\n                    ¡Correcto! Sigue así...\n");
 
                 // Añadir puntos
                 score += 10;
@@ -56,9 +62,45 @@ class SimonDice
             // Mostrar mensaje de fin de juego
             MostrarFinDelJuego();
 
+            // Guardar maxscore
+            GuardarMaxScore();
+
             // Preguntar si quiere seguir jugando
             KeepPlaying = PreguntarReinicio();
         }
+    }
+
+    static void LeerMaxScore()
+    {
+        string directoryPath = @"resources";
+        string filePath = Path.Combine(directoryPath, "maxscore.txt");
+
+        // Crear la carpeta resources si no existe
+        if (!Directory.Exists(directoryPath))
+        {
+            Directory.CreateDirectory(directoryPath);
+        }
+
+        // Crear el archivo maxscore.txt si no existe
+        if (!File.Exists(filePath))
+        {
+            File.WriteAllText(filePath, "0");
+            maxscore = 0;
+        }
+        else
+        {
+            // Leer la puntuación máxima desde el archivo
+            string content = File.ReadAllText(filePath);
+            maxscore = int.Parse(content);
+        }
+    }
+
+    static void GuardarMaxScore()
+    {
+        string filePath = @"resources\maxscore.txt";
+
+        // Sobrescribir el archivo con la puntuación máxima actualizada
+        File.WriteAllText(filePath, maxscore.ToString());
     }
 
     static void MostrarPantallaInicio()
@@ -87,6 +129,8 @@ class SimonDice
         Console.WriteLine("\n     Por cada ronda terminada obtendrás 10 puntos.");
         Console.WriteLine("\n     En caso de fallar algún color, se acabará el juego.");
         Console.WriteLine();
+        Console.ForegroundColor = ConsoleColor.Magenta;
+        Console.WriteLine("     TU MEJOR PUNTUACIÓN HASTA AHORA: " + maxscore + " puntos\n");
         Console.ForegroundColor = ConsoleColor.Red;
         Console.WriteLine("     PRESIONA CUALQUIER TECLA PARA EMPEZAR...\n");
         Console.ReadKey();
@@ -95,8 +139,7 @@ class SimonDice
         Thread.Sleep(2000);
         Console.Clear();
     }
-
-    static void MostrarPantallaDividida()
+    static void MostrarPantallaDividida() //Mostrar 4 colores en la pantalla
     {
         MostrarCuadrante(0, 0, ConsoleColor.Red);
         MostrarCuadrante(Console.WindowWidth / 2, 0, ConsoleColor.Green);
@@ -104,7 +147,7 @@ class SimonDice
         MostrarCuadrante(Console.WindowWidth / 2, Console.WindowHeight / 2, ConsoleColor.Yellow);
     }
 
-    static void MostrarCuadrante(int startX, int startY, ConsoleColor color)
+    static void MostrarCuadrante(int startX, int startY, ConsoleColor color) //Mostrar solo un color
     {
         int width = Console.WindowWidth / 2;
         int height = Console.WindowHeight / 2;
@@ -117,7 +160,7 @@ class SimonDice
         }
         Console.ResetColor();
     }
-    static void AgregarALaSecuencia()
+    static void AgregarALaSecuencia() //Hacer la secuencia cada vez más larga
     {
         char[] colores = { 'R', 'V', 'A', 'B' };
         secuencia.Add(colores[random.Next(0, 4)]);
@@ -197,11 +240,12 @@ class SimonDice
     static void MostrarPuntuacion()
     {
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("************************************");
-        Console.ForegroundColor = ConsoleColor.White;
-        Console.WriteLine("Tus Puntos son: " + score);
+        Console.WriteLine("             ************************************");
+        Console.ForegroundColor = ConsoleColor.Blue;
+        Console.WriteLine("\n                    Tus Puntos son: " + score);
         Console.ForegroundColor = ConsoleColor.Green;
-        Console.WriteLine("************************************");
+        Console.WriteLine("\n             ************************************");
+
     }
 
     static void MostrarFinDelJuego()
